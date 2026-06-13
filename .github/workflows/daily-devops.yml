@@ -1,0 +1,53 @@
+name: Daily DevOps Joke & Skill
+
+on:
+  schedule:
+    # Runs at 11:00 UTC (7:00 AM EST) every day
+    - cron: '0 11 * * *'
+  workflow_dispatch: # Allows manual trigger from the UI
+
+jobs:
+  generate-and-email:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Google GenAI SDK
+      run: |
+        python -m pip install --upgrade pip
+        pip install google-genai
+
+    - name: Execute DevOps Script & Capture Output
+      id: devops_brief
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      run: |
+        python daily_devops.py > briefing.txt
+        
+        # Safely output multi-line string into GitHub Actions step outputs
+        echo "content<<EOF" >> $GITHUB_OUTPUT
+        cat briefing.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Send Email via Gmail SMTP
+      uses: dawidd6/action-send-mail@v4
+      with:
+        # Configuration for Google SMTP Server
+        server_address: smtp.gmail.com
+        server_port: 465
+        secure: true
+        username: ${{ secrets.GMAIL_USERNAME }}
+        password: ${{ secrets.GMAIL_APP_PASSWORD }}
+        
+        # Email Details
+        subject: "☕ Your Daily DevOps Briefing"
+        to: ${{ secrets.TO_EMAIL }}
+        from: "DevOps Automations <${{ secrets.GMAIL_USERNAME }}>"
+        body: ${{ steps.devops_brief.outputs.content }}
