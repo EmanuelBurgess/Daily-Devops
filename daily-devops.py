@@ -10,6 +10,7 @@ def get_daily_content():
         "Directly below the joke, provide a unique 'DevOps Skill of the Day' to focus on "
         "(e.g., a specific advanced Linux tool, an infrastructure-as-code optimization, a Git strategy, "
         "or a monitoring pattern) along with a 2-3 sentence explanation of its real-world value."
+        "Also include an inspirational quote about learning or growth in tech at the end. Format the output as follows:\n\n"
     )
     
     response = client.models.generate_content(
