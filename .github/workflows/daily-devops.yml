@@ -24,17 +24,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install google-genai
 
-    - name: Execute DevOps Script & Capture Output
-      id: devops_brief
+    - name: Execute DevOps Script
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
-        python daily-devops.py > briefing.txt
-        
-        # Safely output multi-line string into GitHub Actions step outputs
-        echo "content<<EOF" >> $GITHUB_OUTPUT
-        cat briefing.txt >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        python daily-devops.py
 
     - name: Send Email via Gmail SMTP
       uses: dawidd6/action-send-mail@v4
@@ -50,4 +44,8 @@ jobs:
         subject: "☕ Your Daily DevOps Briefing"
         to: ${{ secrets.TO_EMAIL }}
         from: "DevOps Automations <${{ secrets.GMAIL_USERNAME }}>"
-        body: ${{ steps.devops_brief.outputs.content }}
+        
+        # Direct file ingestion and rich rendering setup
+        html_body: file://briefing.md
+        convert_markdown: true
+        content_type: text/html
