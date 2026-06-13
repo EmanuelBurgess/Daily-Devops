@@ -3,7 +3,7 @@ name: Daily DevOps Joke & Skill
 on:
   schedule:
     # Runs at 12:00 UTC (8:00 AM EST) every day
-    - cron: ''0 12 * * *''
+    - cron: '0 12 * * *'
   workflow_dispatch: # Allows manual trigger from the UI
 
 jobs:
