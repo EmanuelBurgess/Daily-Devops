@@ -29,7 +29,7 @@ jobs:
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
-        python daily_devops.py > briefing.txt
+        python daily-devops.py > briefing.txt
         
         # Safely output multi-line string into GitHub Actions step outputs
         echo "content<<EOF" >> $GITHUB_OUTPUT
